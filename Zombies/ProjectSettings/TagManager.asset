@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - nodecal
+  - Collide
+  - model
+  - Fire
+  - Head
+  - enemy
+  - Lcalf
+  - Rcalf
+  - Lforearm
+  - Rforearm
+  - Lhand
+  - Rhand
+  - Lthigh
+  - Rthigh
+  - Lupperarm
+  - Rupperarm
+  - ScoreController
+  - AKPickup
+  - AK47
+  - M4
+  - LeftCrosshair
+  - RightCrosshair
+  - TopCrosshair
+  - BottomCrosshair
+  - grenadeSpawn
+  - LimbCollider
+  - spawn
+  - SpawnWindow
+  - crosshairController
+  - M4Pickup
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - Floor
+  - Shootable
+  - Player
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
