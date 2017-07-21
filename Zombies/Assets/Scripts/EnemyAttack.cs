@@ -12,7 +12,7 @@ public class EnemyAttack : MonoBehaviour {
     private PlayerHealth playerHealth;
     private EnemyHealth enemyHealth;
     private EnemyMovement enemyMovement;
-    private float nextAttack;
+    private float nextAttack = 0;
     private bool playerInRange;
     private bool spawnInRange;
 
@@ -41,7 +41,7 @@ public class EnemyAttack : MonoBehaviour {
     {
         if (other.gameObject == player)
         {
-            playerInRange = true;
+            this.playerInRange = true;
         }
         /*
         else if (other.tag == "SpawnWindow" && !enemyMovement.getSpawnDestroyed())
@@ -55,7 +55,7 @@ public class EnemyAttack : MonoBehaviour {
     {
         if (other.gameObject == player)
         {
-            playerInRange = false;
+            this.playerInRange = false;
         }
     }
 

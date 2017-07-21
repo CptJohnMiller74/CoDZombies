@@ -85,12 +85,12 @@ public class EnemyHealth : MonoBehaviour {
     public void takeDamage(int damageValue, string source,RaycastHit shotHit)
     {
         bool isHeadshot = false;
-
+        /*
         if (isDead)
         {
             return;
         }
-
+        */
         if (source == "bullet")
         {
             if (string.Compare(shotHit.collider.transform.ToString(), "mesh_Head (UnityEngine.Transform)") == 0)
@@ -162,16 +162,17 @@ public class EnemyHealth : MonoBehaviour {
     public void die()
     {
         capsule.isTrigger = true;
-        isDead = true;
+        this.isDead = true;
         anim.SetTrigger("die");
-        Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Shootable"), LayerMask.NameToLayer("Player"));
+        //Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Shootable"), LayerMask.NameToLayer("Player"));
         Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Shootable"), LayerMask.NameToLayer("Shootable"));
-        nav.enabled = false;
-        enemyMovement.enabled = false;
+        this.nav.enabled = false;
+        this.enemyMovement.enabled = false;
         Destroy(gameObject, dealthDelay);
         gameController.setCurrentEnemies(gameController.getCurrentEnemies() - 1);
         gameController.setEnemiesLeft(gameController.getEnemiesLeft() - 1);
         gameObject.layer = 2;
+        Physics.IgnoreLayerCollision(2, LayerMask.NameToLayer("Player"));
         scoreController.addScore(scoreOnKill);
         setBodyPartsToTrigger();
     }

@@ -94,7 +94,7 @@ public class EnemyMovement : MonoBehaviour {
             {
                 speedIndex = enemySpeed.Length - 1;
             }
-        };
+        }
         nav.speed = enemySpeed[speedIndex];
     }
     /*

@@ -10,13 +10,11 @@ public class mouseLook : MonoBehaviour {
     private Vector3 mouseLookV;
     private Vector3 smoothingV;
     private Transform player;
-    private PlayerMovement playerMovement;
     private PlayerShooterNew playerShooter;
     private Vector3 recoilVelocity = Vector3.zero;
 
     void Start () {
         player = this.transform.parent.gameObject.transform;
-        playerMovement = player.GetComponent<PlayerMovement>();
         playerShooter = GetComponentInChildren<PlayerShooterNew>();
 	}
 	

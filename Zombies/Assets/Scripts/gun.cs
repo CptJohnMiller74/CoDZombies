@@ -30,7 +30,6 @@ public class gun : MonoBehaviour{
     public Vector3 gunStartPos;
 
     private crosshairController crosshairController;
-    private scoreController scoreController;
     private PlayerMovement playerMovement;
     private float timeParam = 0.3f;
     private Animation anim;
@@ -42,7 +41,6 @@ public class gun : MonoBehaviour{
     private Camera fpsCamera;
     private bool isReloading;
     private Vector3 startPos;
-    private Quaternion startRotation;
     private int totalBullets;
     private bool isFiring;
     private int bulletsInMag;
@@ -62,10 +60,8 @@ public class gun : MonoBehaviour{
         bulletsInReserve = maxReserve;
         currentSpread = minSpread;
         startPos = playerShooter.transform.localPosition;
-        startRotation = playerShooter.transform.localRotation;
         audio = GetComponent<AudioSource>();
         crosshairController = GameObject.FindGameObjectWithTag("crosshairController").GetComponent<crosshairController>();
-        scoreController = GameObject.FindGameObjectWithTag("ScoreController").GetComponent<scoreController>();
     }
 
     private void Update()
