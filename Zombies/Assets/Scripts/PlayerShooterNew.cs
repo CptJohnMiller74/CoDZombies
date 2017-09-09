@@ -17,6 +17,7 @@ public class PlayerShooterNew : MonoBehaviour
     public AudioClip hitmarkerSound;
     public Image hitmarker;
     public crosshairController crosshairController;
+    public Image sniperScope;
 
     private AudioSource audio;
     private gun activeGun;
@@ -30,8 +31,14 @@ public class PlayerShooterNew : MonoBehaviour
     private Transform model;
     private Vector3 startPos;
     private Quaternion startRotation;
+    private Camera fpsCamera;
+    private float startFov;
+    private float zoomFov;
+    private float startSensitivity;
+    private float zoomSensitivity;
+    private SkinnedMeshRenderer arms;
 
-    void Start()
+    void Awake()
     {
         activeGun = GetComponentInChildren<gun>();
         otherGun = null;
@@ -43,38 +50,89 @@ public class PlayerShooterNew : MonoBehaviour
         model = GameObject.FindGameObjectWithTag("model").transform;
         startPos = model.localPosition;
         startRotation = model.localRotation;
+        fpsCamera = GetComponentInParent<Camera>();
+        startFov = fpsCamera.fieldOfView;
+        zoomFov = startFov / 2.7f;
+        startSensitivity = fpsCamera.GetComponent<mouseLook>().sensitivity;
+        zoomSensitivity = startSensitivity / 2f;
+        arms = GameObject.FindGameObjectWithTag("Arms").GetComponent<SkinnedMeshRenderer>();
     }
 
 
     void Update()
     {
-
-
         if (Input.GetKeyDown(KeyCode.R) && !isHoldingGrenade && !activeGun.getIsReloading() && activeGun.getBulletsInMag() < activeGun.magazineSize && activeGun.getTotalBullets() > 0)
         {
             StartCoroutine(activeGun.reload());
         }
 
-        if (Input.GetButton("Fire1") && Time.time > nextFire)
+        if (activeGun.isFullAuto)
         {
-            if (activeGun.getTotalBullets() <= 0 && activeGun.getBulletsInMag() <= 0)
+            if (Input.GetButton("Fire1") && Time.time > nextFire && !playerMovement.getisSprinting())
             {
-                activeGun.emptyReload();
-            }
+                if (activeGun.getTotalBullets() <= 0 && activeGun.getBulletsInMag() <= 0)
+                {
+                    activeGun.emptyReload();
+                }
 
-            else if (activeGun.getBulletsInMag() <= 0 && !activeGun.getIsReloading())
-            {
-                StartCoroutine(activeGun.reload());
-            }
+                else if (activeGun.getBulletsInMag() <= 0 && !activeGun.getIsReloading())
+                {
+                    StartCoroutine(activeGun.reload());
+                }
 
-            else if (!activeGun.getIsReloading())
-            {
-                isFiring = true;
-                nextFire = Time.time + activeGun.fireRate;
-                activeGun.incrementSpread();
-                activeGun.fire();
-                isFiring = false;
+                else if (!activeGun.getIsReloading())
+                {
+                    isFiring = true;
+                    nextFire = Time.time + activeGun.fireRate;
+                    activeGun.incrementSpread();
+                    activeGun.fire();
+                    isFiring = false;
+                }
             }
+        }
+
+        else
+        {
+            if (Input.GetButtonDown("Fire1") && Time.time > nextFire && !playerMovement.getisSprinting())
+            {
+                if (activeGun.getTotalBullets() <= 0 && activeGun.getBulletsInMag() <= 0)
+                {
+                    activeGun.emptyReload();
+                }
+
+                else if (activeGun.getBulletsInMag() <= 0 && !activeGun.getIsReloading())
+                {
+                    StartCoroutine(activeGun.reload());
+                }
+
+                else if (!activeGun.getIsReloading())
+                {
+                    isFiring = true;
+                    nextFire = Time.time + activeGun.fireRate;
+                    activeGun.incrementSpread();
+                    activeGun.fire();
+                    isFiring = false;
+                }
+            }
+        }
+
+
+        if (Vector3.Distance(transform.localPosition, activeGun.aimPos) <= .0013f && activeGun.gameObject.tag == "L96Sniper")
+        {
+            sniperScope.gameObject.SetActive(true);
+            fpsCamera.fieldOfView = zoomFov;
+            fpsCamera.GetComponent<mouseLook>().sensitivity = zoomSensitivity;
+            activeGun.GetComponent<MeshRenderer>().enabled = false;
+            arms.gameObject.SetActive(false);
+        }
+
+        else if (transform.localPosition != activeGun.aimPos && activeGun.gameObject.tag == "L96Sniper" && sniperScope.gameObject.activeSelf)
+        {
+            sniperScope.gameObject.SetActive(false);
+            fpsCamera.fieldOfView = startFov;
+            fpsCamera.GetComponent<mouseLook>().sensitivity = startSensitivity;
+            activeGun.GetComponent<MeshRenderer>().enabled = true;
+            arms.gameObject.SetActive(true);
         }
 
         if (Input.GetKeyDown(KeyCode.G) && !activeGun.getIsReloading() && !isAds && !isHoldingGrenade && numGrenades > 0)
@@ -109,8 +167,9 @@ public class PlayerShooterNew : MonoBehaviour
     {
         otherGun.gameObject.SetActive(true);
         activeGun.gameObject.SetActive(false);
+        gun tempGun = activeGun;
         activeGun = otherGun;
-        otherGun = activeGun;
+        otherGun = tempGun;
     }
 
     public IEnumerator showHitmarker()
@@ -132,7 +191,7 @@ public class PlayerShooterNew : MonoBehaviour
     {
         activeGun.gameObject.SetActive(false);
         GameObject prevGun = activeGun.gameObject;
-        Destroy(prevGun, 2f);
+        otherGun = prevGun.GetComponent<gun>();
         newActiveGun.GetComponent<gun>().enabled = true;
         this.activeGun = newActiveGun;
         activeGun.transform.localPosition = activeGun.gunStartPos;

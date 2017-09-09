@@ -256,6 +256,8 @@ MonoBehaviour:
   spreadResetDelay: 0.25
   isFullAuto: 1
   gunStartPos: {x: -0.0007941576, y: 0.01019585, z: 0.0002141403}
+  gunCost: 1400
+  ammoCost: 350
 --- !u!198 &198349500211414688
 ParticleSystem:
   m_ObjectHideFlags: 1

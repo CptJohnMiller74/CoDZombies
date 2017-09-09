@@ -12,12 +12,17 @@ public class PlayerMovement : MonoBehaviour {
     private bool isSprinting;
     private Rigidbody rb;
     private bool isJumping;
+    private bool isMovingHorizontal;
+    private bool isMoving;
+    private bool isInEnemySpawn;
+    private gunSwayController gunSway;
 
     public void Awake()
     {
         Cursor.lockState = CursorLockMode.Locked;
         rb = GetComponent<Rigidbody>();
         isJumping = false;
+        gunSway = GetComponentInChildren<gunSwayController>();
     }
 
     public void Update()
@@ -25,12 +30,39 @@ public class PlayerMovement : MonoBehaviour {
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetKeyUp(KeyCode.LeftShift) || horizontal != 0)
+        if (horizontal == 0 && vertical == 0)
         {
-            isSprinting = false;
+            isMoving = false;
         }
 
-        if (Input.GetKey(KeyCode.LeftShift))
+        else
+        {
+            isMoving = true;
+        }
+
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            isSprinting = false;
+            crosshairController.makeCrosshairsVisible();
+        }
+
+        if (Input.GetKey(KeyCode.LeftShift) && (horizontal != 0 || vertical < 0))
+        {
+            gunSway.resetGun();
+            crosshairController.makeCrosshairsVisible();
+        }
+
+        if (horizontal != 0)
+        {
+            isMovingHorizontal = true;
+        }
+
+        else
+        {
+            isMovingHorizontal = false;
+        }
+
+        if (Input.GetKey(KeyCode.LeftShift) && vertical > 0 && horizontal == 0)
         {
             isSprinting = true;
             crosshairController.clearCrosshairs();
@@ -87,4 +119,24 @@ public class PlayerMovement : MonoBehaviour {
         isJumping = false;
     }
 
+    public void OnCollisionEnter(Collision collision)
+    {
+        rb.velocity = Vector3.zero;
+        rb.AddForce(Vector3.down);
+    }
+
+    public bool getIsMovingHorizontal()
+    {
+        return isMovingHorizontal;
+    }
+
+    public bool getIsMoving()
+    {
+        return isMoving;
+    }
+
+    public bool getIsInEnemySpawn()
+    {
+        return this.isInEnemySpawn;
+    }
 }

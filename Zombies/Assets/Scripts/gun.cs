@@ -47,6 +47,7 @@ public class gun : MonoBehaviour{
     private int bulletsInReserve;
     private Vector3 recoilIncrement;
     private bool isAds;
+    private int maxBullets;
 
     public void Start ()
     {
@@ -57,6 +58,7 @@ public class gun : MonoBehaviour{
         fpsCamera = GetComponentInParent<Camera>();
         bulletsInMag = magazineSize;
         totalBullets = maxReserve + magazineSize;
+        maxBullets = totalBullets;
         bulletsInReserve = maxReserve;
         currentSpread = minSpread;
         startPos = playerShooter.transform.localPosition;
@@ -77,6 +79,11 @@ public class gun : MonoBehaviour{
     public int getBulletsInReserve()
     {
         return this.bulletsInReserve;
+    }
+
+    public int getMaxBullets()
+    {
+        return this.maxBullets;
     }
 
     public void fire()
@@ -138,10 +145,11 @@ public class gun : MonoBehaviour{
 
         int bulletsUsed = magazineSize - bulletsInMag;
 
-        if (totalBullets <= bulletsUsed)
+        if (bulletsInReserve <= bulletsUsed)
         {
-            bulletsInMag += totalBullets;
+            bulletsInMag += bulletsInReserve;
             totalBullets = 0;
+            bulletsInReserve = 0;
         }
         else
         {
@@ -165,7 +173,7 @@ public class gun : MonoBehaviour{
         else
         {
             playerShooter.transform.localPosition = Vector3.Lerp(playerShooter.transform.localPosition, startPos, Time.deltaTime * adsSpeed);
-            //crosshairController.makeCrosshairsVisible();
+            crosshairController.makeCrosshairsVisible();
             isAds = false;
         }
     }
@@ -241,5 +249,10 @@ public class gun : MonoBehaviour{
     public Vector3 getStartPos()
     {
         return this.startPos;
+    }
+
+    public bool getIsAds()
+    {
+        return isAds;
     }
 }

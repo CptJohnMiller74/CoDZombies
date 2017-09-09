@@ -56,13 +56,9 @@ public class gameController : MonoBehaviour {
         currentEnemies += 1;
         yield return new WaitForSeconds(spawnDelay);
         int spawnIndex = Random.Range(0, spawns.Length);
-        /*GameObject thisEnemy = */Instantiate(enemy, spawns[spawnIndex].position, spawns[spawnIndex].rotation);
-        /*
-        if (spawns[spawnIndex].transform.parent.gameObject.tag == "SpawnWindow")
-        {
-            EnemyMovement thisEnemyM = thisEnemy.GetComponent<EnemyMovement>();
-            thisEnemyM.giveSpawn(spawns[spawnIndex].transform.parent.gameObject);
-        }*/
+        GameObject newEnemy = Instantiate(enemy, spawns[spawnIndex].position, spawns[spawnIndex].rotation);
+        newEnemy.GetComponent<EnemyMovement>().setSpawn(spawns[spawnIndex].gameObject.transform.GetChild(0));
+        newEnemy.GetComponent<EnemyAttack>().setSpawnTarget(spawns[spawnIndex].gameObject.transform.GetChild(0).gameObject);
         isSpawning = false;
     }
 

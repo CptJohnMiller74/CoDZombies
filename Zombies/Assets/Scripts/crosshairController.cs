@@ -8,14 +8,13 @@ public class crosshairController : MonoBehaviour {
     public Image[] crosshairs;
     public PlayerShooterNew playerShooter;
 
-    void Awake () {
-        //updateCrosshairs();
-        clearCrosshairs();
+    void Start () {
+        updateCrosshairs();
 	}
 
     void Update()
     {
-        //updateCrosshairs();
+        updateCrosshairs();
     }
 
     public void clearCrosshairs()
@@ -43,25 +42,24 @@ public class crosshairController : MonoBehaviour {
             {
                 if (crosshair.gameObject.tag == "LeftCrosshair")
                 {
-                    crosshair.transform.position = new Vector3(-Mathf.Abs(playerShooter.getActiveGun().getCurrentSpread() * 600) + 453, 211.5f, 0);
+                    crosshair.transform.position = new Vector3(-Mathf.Abs(playerShooter.getActiveGun().getCurrentSpread() * 1000) + Screen.width / 2, Screen.height / 2, 0);
                 }
 
                 if (crosshair.gameObject.tag == "RightCrosshair")
                 {
-                    crosshair.transform.position = new Vector3(Mathf.Abs(playerShooter.getActiveGun().getCurrentSpread() * 600) + 453, 211.5f, 0);
+                    crosshair.transform.position = new Vector3(Mathf.Abs(playerShooter.getActiveGun().getCurrentSpread() * 1000) + Screen.width / 2, Screen.height / 2, 0);
                 }
 
                 if (crosshair.gameObject.tag == "TopCrosshair")
                 {
-                    crosshair.transform.position = new Vector3(453, Mathf.Abs(playerShooter.getActiveGun().getCurrentSpread() * 600) + 211.5f, 0);
+                    crosshair.transform.position = new Vector3(Screen.width / 2, Mathf.Abs(playerShooter.getActiveGun().getCurrentSpread() * 1000) + Screen.height / 2, 0);
                 }
 
                 if (crosshair.gameObject.tag == "BottomCrosshair")
                 {
-                    crosshair.transform.position = new Vector3(453, -Mathf.Abs(playerShooter.getActiveGun().getCurrentSpread() * 600) + 211.5f, 0);
+                    crosshair.transform.position = new Vector3(Screen.width / 2, -Mathf.Abs(playerShooter.getActiveGun().getCurrentSpread() * 1000) + Screen.height / 2, 0);
                 }
             }
         }
-
     }
 }

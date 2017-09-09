@@ -7,25 +7,19 @@ public class playerInteractionWithMap : MonoBehaviour {
 
     public Text alertText;
     public scoreController scoreController;
-    public int AKAmmoCost;
-    public int AKCost;
-    public int M4AmmoCost;
-    public int M4Cost;
-    public GameObject AK47;
-    public GameObject M4;
 
     private PlayerShooterNew playerShooter;
     private string activeGun;
     private string otherGun;
-    private bool inRange;
-    private bool inRangeAK;
-    private bool inRangeM4;
+    private bool inRangeToInteractWithGun;
     private int holdTime;
     private float triggerTime;
     private bool isHolding;
-    private GameObject weaponInInteractionRange;
+    private bool inRangeToInteractWithSpawn;
+    private gunPickup targetPickup;
+    private spawnWindow targetSpawn;
 
-	void Start () {
+    void Start () {
         playerShooter = GetComponentInChildren<PlayerShooterNew>();
         activeGun = playerShooter.getActiveGun().gameObject.tag;
         alertText.text = "";
@@ -35,107 +29,94 @@ public class playerInteractionWithMap : MonoBehaviour {
 
 	void Update () {
 		
-        if (Input.GetKeyDown(KeyCode.F) && inRange)
+        if (Input.GetKeyDown(KeyCode.F) && (inRangeToInteractWithGun || inRangeToInteractWithSpawn))
         {
             triggerTime = Time.time + holdTime;
             isHolding = true;
         }
 
-        if (Input.GetKey(KeyCode.F) && Time.time >= triggerTime && inRange && isHolding)
+        if (Input.GetKey(KeyCode.F) && Time.time >= triggerTime && inRangeToInteractWithGun && isHolding)
         {
-            if (inRangeAK)
-            {
-                interactAK();
-                isHolding = false;
-            }
+            interactWithGunPickup();
+            isHolding = false;
+        }
 
-            if (inRangeM4)
+        else if (Input.GetKey(KeyCode.F) && Time.time >= triggerTime && inRangeToInteractWithSpawn && isHolding)
+        {
+            if (!targetSpawn.getIsFullHealth())
             {
-                interactM4();
-                isHolding = false;
+                targetSpawn.repair();
             }
         }
-        //Debug.Log(weaponInInteractionRange);
+
+        if (targetSpawn != null && targetSpawn.getIsFullHealth() && inRangeToInteractWithSpawn)
+        {
+            alertText.text = "";
+        }
 	}
 
     public void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "AKPickup")
+        //Debug.Log(other.tag);
+        if (other.tag == "gunPickup")
         {
-            inRange = true;
-            inRangeAK = true;
-            if (activeGun == "AK47" || otherGun == "AK47")
+            inRangeToInteractWithGun = true;
+            targetPickup = other.gameObject.GetComponent<gunPickup>();
+            //Debug.Log(targetPickup.gunName);
+            if (activeGun == targetPickup.gunName)
             {
-                alertText.text = "Hold F to refill ammo (" + AKAmmoCost.ToString() + ")";
+                alertText.text = "Hold F to refill ammo (" + targetPickup.ammoCost.ToString() + ")";
             }
 
             else
             {
-                alertText.text = "Hold F to buy AK-47 (" + AKCost + ")";
+                alertText.text = "Hold F to buy " + targetPickup.gunName + " (" + targetPickup.gunCost.ToString() + ")";
             }
         }
 
-        else if (other.tag == "M4Pickup")
+        if (other.tag == "SpawnWindow")
         {
-            inRange = true;
-            inRangeM4 = true;
-            if (activeGun == "M4" || otherGun == "M4")
-            {
-                alertText.text = "Hold F to refill ammo (" + M4AmmoCost.ToString() + ")";
-            }
+            inRangeToInteractWithSpawn = true;
+            targetSpawn = other.gameObject.GetComponent<spawnWindow>();
 
-            else
+            if (!targetSpawn.getIsFullHealth())
             {
-                alertText.text = "Hold F to buy M4 (" + M4Cost + ")";
+                alertText.text = "Hold F to repair";
             }
         }
     }
 
     public void OnTriggerExit(Collider other)
     {
-        if (other.tag == "AKPickup")
+        if (other.tag == "gunPickup")
         {
-            inRangeAK = false;
+            inRangeToInteractWithGun = false;
+            targetPickup = null;
             alertText.text = "";
         }
 
-        else if (other.tag == "M4Pickup")
+        if (other.tag == "SpawnWindow")
         {
-            inRangeM4 = false;
+            inRangeToInteractWithSpawn = false;
+            targetSpawn = null;
             alertText.text = "";
         }
-
     }
 
-    public void interactAK()
+    public void interactWithGunPickup()
     {
-        if (activeGun == "AK47" && playerShooter.getActiveGun().getTotalBullets() < playerShooter.getActiveGun().maxReserve && scoreController.getScore() > AKAmmoCost)
+        if (activeGun == targetPickup.gunName && playerShooter.getActiveGun().getTotalBullets() < playerShooter.getActiveGun().getMaxBullets() && scoreController.getScore() > targetPickup.ammoCost)
         {
-            scoreController.spendScore(AKAmmoCost);
+            scoreController.spendScore(targetPickup.ammoCost);
             playerShooter.getActiveGun().refillAmmo();
         }
 
-        else if (scoreController.getScore() > AKCost)
+        else if (scoreController.getScore() > targetPickup.gunCost)
         {
-            scoreController.spendScore(AKCost);
-            activeGun = "AK47";
-            playerShooter.setActiveGun(Instantiate(AK47, GameObject.FindGameObjectWithTag("model").transform).GetComponent<gun>());
-        }
-    }
-
-    public void interactM4()
-    {
-        if (activeGun == "M4" && playerShooter.getActiveGun().getTotalBullets() < playerShooter.getActiveGun().maxReserve && scoreController.getScore() > M4AmmoCost)
-        {
-            scoreController.spendScore(M4AmmoCost);
-            playerShooter.getActiveGun().refillAmmo();
-        }
-
-        else if (scoreController.getScore() > M4Cost)
-        {
-            scoreController.spendScore(M4Cost);
-            activeGun = "M4";
-            playerShooter.setActiveGun(Instantiate(M4, GameObject.FindGameObjectWithTag("model").transform).GetComponent<gun>());
+            scoreController.spendScore(targetPickup.gunCost);
+            activeGun = targetPickup.gunName;
+            Debug.Log(activeGun);
+            playerShooter.setActiveGun(Instantiate(targetPickup.gun, GameObject.FindGameObjectWithTag("model").transform).GetComponent<gun>());
         }
     }
 

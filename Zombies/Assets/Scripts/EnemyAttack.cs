@@ -14,6 +14,7 @@ public class EnemyAttack : MonoBehaviour {
     private EnemyMovement enemyMovement;
     private float nextAttack = 0;
     private bool playerInRange;
+    private spawnWindow spawnTarget;
     private bool spawnInRange;
 
 	void Start () {
@@ -25,16 +26,16 @@ public class EnemyAttack : MonoBehaviour {
     }
 	
 	void Update () {
-		
+
         if (Time.time > nextAttack && playerInRange && enemyHealth.getCurrentHealth() > 0 && playerHealth.getCurrentHP() > 0)
         {
-            StartCoroutine(attack());
+            StartCoroutine(attackPlayer());
         }
-        /*
-        else if (spawnInRange && !enemyMovement.getSpawnDestroyed())
+
+        else if (Time.time > nextAttack && spawnInRange && enemyHealth.getCurrentHealth() > 0 && !spawnTarget.getIsDestroyed())
         {
-            attackSpawn();
-        }*/
+            StartCoroutine(attackSpawn());
+        }
 	}
 
     void OnTriggerEnter(Collider other)
@@ -43,11 +44,7 @@ public class EnemyAttack : MonoBehaviour {
         {
             this.playerInRange = true;
         }
-        /*
-        else if (other.tag == "SpawnWindow" && !enemyMovement.getSpawnDestroyed())
-        {
-            spawnInRange = true;
-        }*/
+
     }
 
 
@@ -57,9 +54,14 @@ public class EnemyAttack : MonoBehaviour {
         {
             this.playerInRange = false;
         }
+
+        else if (other.gameObject.tag == "SpawnWindow")
+        {
+            this.spawnInRange = false;
+        }
     }
 
-    public IEnumerator attack()
+    public IEnumerator attackPlayer()
     {
         nextAttack = Time.time + attackSpeed;
         anim.SetBool("attack", true);
@@ -72,26 +74,29 @@ public class EnemyAttack : MonoBehaviour {
         yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
         anim.SetBool("attack", false);
     }
-    /*
+    
     public IEnumerator attackSpawn()
     {
-        GameObject spawn = enemyMovement.getSpawn();
-        foreach (Transform child in spawn.transform)
-        {
-            child.gameObject.SetActive(false);
-            yield return new WaitForSeconds(1.5f);
-        }
+        nextAttack = Time.time + attackSpeed;
+        anim.SetBool("attack", true);
+        spawnTarget.takeDamage();
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
+        anim.SetBool("attack", false);
+    }
 
-        if (spawn.transform.childCount == 0)
-        {
-            enemyMovement.setSpawnDestroyed(true);
-        }
+    public bool getSpawnInRange()
+    {
+        return this.spawnInRange;
+    }
 
-        else
-        {
-            GameObject board = spawn.transform.GetChild(0).gameObject;
-            board.SetActive(false);
-            nextAttack = Time.time + attackSpeed;
-        }
-    }*/
+    public void setSpawnInRange(bool b)
+    {
+        this.spawnInRange = b;
+    }
+
+    public void setSpawnTarget(GameObject currSpawn)
+    {
+        this.spawnTarget = currSpawn.GetComponent<spawnWindow>();
+    }
 }

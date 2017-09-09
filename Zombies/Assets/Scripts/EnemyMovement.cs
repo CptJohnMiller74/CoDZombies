@@ -13,11 +13,13 @@ public class EnemyMovement : MonoBehaviour {
     private Transform player;
     private PlayerHealth playerHealth;
     private EnemyHealth enemyHealth;
+    private EnemyAttack enemyAttack;
     private NavMeshAgent nav;
     private int speedIndex;
-    //private bool spawnDestroyed;
-    //private bool hasSpawn;
-    //private GameObject spawn;
+    private Transform spawn;
+    private Transform spawnEnd;
+    private bool isOutOfSpawn;
+    //private float moveSpeed = .5f;
 
     void Start () {
         GameObject gameControllerObj = GameObject.FindGameObjectWithTag("GameController");
@@ -31,16 +33,23 @@ public class EnemyMovement : MonoBehaviour {
         assignSpeed();
         nav.angularSpeed = enemyAngularSpeed;
         enemyHealth = GetComponent<EnemyHealth>();
+        enemyAttack = GetComponent<EnemyAttack>();
+        isOutOfSpawn = false;
 	}
 	
 	void Update () {
-		/*
-        if (hasSpawn && !spawnDestroyed)
+
+        if (spawn.GetComponent<spawnWindow>().getIsDestroyed() && enemyAttack.getSpawnInRange() && !isOutOfSpawn)
         {
-            nav.SetDestination(spawn.transform.position);
+            moveThroughDoor();
         }
-        */
-        if (playerHealth.getCurrentHP() > 0 && enemyHealth.getCurrentHealth() > 0)
+
+        if (!isOutOfSpawn && !player.GetComponent<PlayerMovement>().getIsInEnemySpawn())
+        {
+            nav.SetDestination(this.spawn.position);
+        }
+
+        else if (playerHealth.getCurrentHP() > 0 && enemyHealth.getCurrentHealth() > 0)
         {
             nav.SetDestination(player.position);
         }
@@ -97,26 +106,23 @@ public class EnemyMovement : MonoBehaviour {
         }
         nav.speed = enemySpeed[speedIndex];
     }
-    /*
-    public void giveSpawn(GameObject spawnWindow)
+
+    public void moveThroughDoor()
     {
-        this.spawn = spawnWindow;
-        hasSpawn = true;
-        spawnDestroyed = false;
+        nav.enabled = false;
+        gameObject.transform.position = spawnEnd.position;
+        nav.enabled = true;
+        isOutOfSpawn = true;
     }
 
-    public bool getSpawnDestroyed()
+    public void setSpawn(Transform currSpawn)
     {
-        return this.spawnDestroyed;
-    }
-
-    public void setSpawnDestroyed(bool b)
-    {
-        this.spawnDestroyed = b;
+        this.spawn = currSpawn;
+        this.spawnEnd = currSpawn.GetChild(0);
     }
 
     public GameObject getSpawn()
     {
-        return this.spawn;
-    } */
+        return this.spawn.gameObject;
+    }
 }

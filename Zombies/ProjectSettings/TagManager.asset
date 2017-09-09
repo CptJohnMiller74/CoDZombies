@@ -34,6 +34,17 @@ TagManager:
   - SpawnWindow
   - crosshairController
   - M4Pickup
+  - SniperScope
+  - L96Sniper
+  - Arms
+  - armsAndGun
+  - gunPickup
+  - AK-47
+  - spawnEnd
+  - board
+  - spawnWall
+  - spawnWall1
+  - spawnWall2
   layers:
   - Default
   - TransparentFX
