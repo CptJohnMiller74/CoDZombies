@@ -89,11 +89,12 @@ public class grenade : MonoBehaviour
         this.sphereCollider.radius = 0;
         if (enemiesInRange.Count > 0)
         {
+            Vector3 rayOrigin = this.transform.position;
+
             foreach (EnemyHealth enemyHealth in enemiesInRange)
             {
-                if (enemyHealth != null)
+                if (enemyHealth != null && !enemyHealth.getIsDead())
                 {
-                    Vector3 rayOrigin = this.transform.position;
                     Vector3 rayEnd = enemyHealth.gameObject.GetComponent<Rigidbody>().worldCenterOfMass;
                     RaycastHit shotHit;
                     if (Physics.Raycast(rayOrigin, rayEnd, out shotHit, Vector3.Distance(rayEnd, rayOrigin)))

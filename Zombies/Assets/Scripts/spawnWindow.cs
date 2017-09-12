@@ -35,7 +35,7 @@ public class spawnWindow : MonoBehaviour {
 	
 
 	void Update () {
-
+        //Debug.Log(isFullHealth);
         if (currIndex < maxBoards)
         {
             isFullHealth = false;
@@ -82,6 +82,7 @@ public class spawnWindow : MonoBehaviour {
     {
         if (Time.time > nextRepair)
         {
+            isDestroyed = false;
             boards[currIndex].SetActive(true);
             currIndex += 1;
             scoreController.addScore(repairValue);

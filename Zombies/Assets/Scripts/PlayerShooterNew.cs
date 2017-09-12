@@ -37,6 +37,7 @@ public class PlayerShooterNew : MonoBehaviour
     private float startSensitivity;
     private float zoomSensitivity;
     private SkinnedMeshRenderer arms;
+    private gunSwayController gunSway;
 
     void Awake()
     {
@@ -56,6 +57,7 @@ public class PlayerShooterNew : MonoBehaviour
         startSensitivity = fpsCamera.GetComponent<mouseLook>().sensitivity;
         zoomSensitivity = startSensitivity / 2f;
         arms = GameObject.FindGameObjectWithTag("Arms").GetComponent<SkinnedMeshRenderer>();
+        gunSway = GetComponentInParent<gunSwayController>();
     }
 
 
@@ -119,27 +121,21 @@ public class PlayerShooterNew : MonoBehaviour
 
         if (Vector3.Distance(transform.localPosition, activeGun.aimPos) <= .0013f && activeGun.gameObject.tag == "L96Sniper")
         {
-            sniperScope.gameObject.SetActive(true);
-            fpsCamera.fieldOfView = zoomFov;
-            fpsCamera.GetComponent<mouseLook>().sensitivity = zoomSensitivity;
-            activeGun.GetComponent<MeshRenderer>().enabled = false;
-            arms.gameObject.SetActive(false);
+            zoomScope();
         }
 
         else if (transform.localPosition != activeGun.aimPos && activeGun.gameObject.tag == "L96Sniper" && sniperScope.gameObject.activeSelf)
         {
-            sniperScope.gameObject.SetActive(false);
-            fpsCamera.fieldOfView = startFov;
-            fpsCamera.GetComponent<mouseLook>().sensitivity = startSensitivity;
-            activeGun.GetComponent<MeshRenderer>().enabled = true;
-            arms.gameObject.SetActive(true);
+            zoomOutScope();
         }
 
         if (Input.GetKeyDown(KeyCode.G) && !activeGun.getIsReloading() && !isAds && !isHoldingGrenade && numGrenades > 0)
         {
+            gunSway.enabled = false;
             Instantiate(grenadeObj, grenadeSpawn.position, Quaternion.identity);
             isHoldingGrenade = true;
             numGrenades -= 1;
+            gunSway.enabled = true;
         }
 
         if (Input.GetKeyDown(KeyCode.Q) && otherGun != null)
@@ -155,6 +151,24 @@ public class PlayerShooterNew : MonoBehaviour
 
         activeGun.ads();
         updateText();
+    }
+
+    public void zoomScope()
+    {
+        sniperScope.gameObject.SetActive(true);
+        fpsCamera.fieldOfView = zoomFov;
+        fpsCamera.GetComponent<mouseLook>().sensitivity = zoomSensitivity;
+        activeGun.GetComponent<MeshRenderer>().enabled = false;
+        arms.gameObject.SetActive(false);
+    }
+
+    public void zoomOutScope()
+    {
+        sniperScope.gameObject.SetActive(false);
+        fpsCamera.fieldOfView = startFov;
+        fpsCamera.GetComponent<mouseLook>().sensitivity = startSensitivity;
+        activeGun.GetComponent<MeshRenderer>().enabled = true;
+        arms.gameObject.SetActive(true);
     }
 
     public void updateText()
@@ -182,19 +196,28 @@ public class PlayerShooterNew : MonoBehaviour
         hitmarker.color = Color.clear;
     }
 
+    public void setActiveGun(gun newActiveGun)
+    {
+        if (otherGun == null)
+        {
+            GameObject prevGun = activeGun.gameObject;
+            otherGun = prevGun.GetComponent<gun>();
+        }
+
+        activeGun.gameObject.SetActive(false);
+        newActiveGun.GetComponent<gun>().enabled = true;
+        this.activeGun = newActiveGun;
+        activeGun.transform.localPosition = activeGun.gunStartPos;
+    }
+
     public gun getActiveGun()
     {
         return this.activeGun;
     }
 
-    public void setActiveGun(gun newActiveGun)
+    public gun getOtherGun()
     {
-        activeGun.gameObject.SetActive(false);
-        GameObject prevGun = activeGun.gameObject;
-        otherGun = prevGun.GetComponent<gun>();
-        newActiveGun.GetComponent<gun>().enabled = true;
-        this.activeGun = newActiveGun;
-        activeGun.transform.localPosition = activeGun.gunStartPos;
+        return this.otherGun;
     }
 
     public bool getIsHoldingGrenade()

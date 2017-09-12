@@ -9,6 +9,7 @@ public class PlayerHealth : MonoBehaviour {
     public Image damageImg;
     public float flashSpeed = 5f;
     public float regenDelay = 5f;
+    public mouseLook fpsCamera;
 
     private  Color damageColor = new Color(1f, 0f, 0f, 0.3f);
     private PlayerMovement playerMovement;                              
@@ -18,7 +19,6 @@ public class PlayerHealth : MonoBehaviour {
     private bool damaged;
     private float startRegen;
     private int currentHP;
-    public mouseLook fpsCamera;
 
     void Start () {
         currentHP = startingHP;
@@ -73,5 +73,6 @@ public class PlayerHealth : MonoBehaviour {
         death.Play();
         fpsCamera.enabled = false;
         this.enabled = false;
+        gameObject.GetComponentInChildren<gunSwayController>().enabled = false;
     }
 }

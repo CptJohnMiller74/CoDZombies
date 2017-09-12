@@ -12,7 +12,7 @@ public class playerInteractionWithMap : MonoBehaviour {
     private string activeGun;
     private string otherGun;
     private bool inRangeToInteractWithGun;
-    private int holdTime;
+    private float holdTime;
     private float triggerTime;
     private bool isHolding;
     private bool inRangeToInteractWithSpawn;
@@ -21,14 +21,20 @@ public class playerInteractionWithMap : MonoBehaviour {
 
     void Start () {
         playerShooter = GetComponentInChildren<PlayerShooterNew>();
-        activeGun = playerShooter.getActiveGun().gameObject.tag;
         alertText.text = "";
-        holdTime = 1;
+        holdTime = 1f;
         isHolding = false;
 	}
 
 	void Update () {
-		
+
+        activeGun = playerShooter.getActiveGun().gameObject.tag;
+
+        if (playerShooter.getOtherGun() != null)
+        {
+            otherGun = playerShooter.getOtherGun().gameObject.tag;
+        }
+
         if (Input.GetKeyDown(KeyCode.F) && (inRangeToInteractWithGun || inRangeToInteractWithSpawn))
         {
             triggerTime = Time.time + holdTime;
@@ -57,13 +63,11 @@ public class playerInteractionWithMap : MonoBehaviour {
 
     public void OnTriggerEnter(Collider other)
     {
-        //Debug.Log(other.tag);
         if (other.tag == "gunPickup")
         {
             inRangeToInteractWithGun = true;
             targetPickup = other.gameObject.GetComponent<gunPickup>();
-            //Debug.Log(targetPickup.gunName);
-            if (activeGun == targetPickup.gunName)
+            if (activeGun == targetPickup.gunName || otherGun == targetPickup.gunName)
             {
                 alertText.text = "Hold F to refill ammo (" + targetPickup.ammoCost.ToString() + ")";
             }
@@ -105,13 +109,22 @@ public class playerInteractionWithMap : MonoBehaviour {
 
     public void interactWithGunPickup()
     {
-        if (activeGun == targetPickup.gunName && playerShooter.getActiveGun().getTotalBullets() < playerShooter.getActiveGun().getMaxBullets() && scoreController.getScore() > targetPickup.ammoCost)
+        if ((activeGun == targetPickup.gunName && playerShooter.getActiveGun().getTotalBullets() < playerShooter.getActiveGun().getMaxBullets()) || (otherGun == targetPickup.gunName && playerShooter.getOtherGun().getTotalBullets() < playerShooter.getOtherGun().getMaxBullets()) && scoreController.getScore() >= targetPickup.ammoCost)
         {
             scoreController.spendScore(targetPickup.ammoCost);
-            playerShooter.getActiveGun().refillAmmo();
+            if (activeGun == targetPickup.gunName)
+            {
+                playerShooter.getActiveGun().refillAmmo();
+            }
+
+            else if (otherGun == targetPickup.gunName)
+            {
+                playerShooter.getOtherGun().refillAmmo();
+            }
+
         }
 
-        else if (scoreController.getScore() > targetPickup.gunCost)
+        else if (scoreController.getScore() >= targetPickup.gunCost && activeGun != targetPickup.gunName && otherGun != targetPickup.gunName)
         {
             scoreController.spendScore(targetPickup.gunCost);
             activeGun = targetPickup.gunName;

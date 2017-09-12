@@ -170,7 +170,7 @@ public class EnemyHealth : MonoBehaviour {
         this.enemyMovement.enabled = false;
         Destroy(gameObject, dealthDelay);
         gameController.setCurrentEnemies(gameController.getCurrentEnemies() - 1);
-        gameController.setEnemiesLeft(gameController.getEnemiesLeft() - 1);
+        //gameController.setEnemiesLeft(gameController.getEnemiesLeft() - 1);
         gameObject.layer = 2;
         Physics.IgnoreLayerCollision(2, LayerMask.NameToLayer("Player"));
         scoreController.addScore(scoreOnKill);

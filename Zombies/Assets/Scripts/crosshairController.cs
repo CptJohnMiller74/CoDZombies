@@ -42,22 +42,22 @@ public class crosshairController : MonoBehaviour {
             {
                 if (crosshair.gameObject.tag == "LeftCrosshair")
                 {
-                    crosshair.transform.position = new Vector3(-Mathf.Abs(playerShooter.getActiveGun().getCurrentSpread() * 1000) + Screen.width / 2, Screen.height / 2, 0);
+                    crosshair.transform.position = new Vector3(-Mathf.Abs(playerShooter.getActiveGun().getCurrentSpread() * Screen.width) + Screen.width / 2, Screen.height / 2, 0);
                 }
 
                 if (crosshair.gameObject.tag == "RightCrosshair")
                 {
-                    crosshair.transform.position = new Vector3(Mathf.Abs(playerShooter.getActiveGun().getCurrentSpread() * 1000) + Screen.width / 2, Screen.height / 2, 0);
+                    crosshair.transform.position = new Vector3(Mathf.Abs(playerShooter.getActiveGun().getCurrentSpread() * Screen.width) + Screen.width / 2, Screen.height / 2, 0);
                 }
 
                 if (crosshair.gameObject.tag == "TopCrosshair")
                 {
-                    crosshair.transform.position = new Vector3(Screen.width / 2, Mathf.Abs(playerShooter.getActiveGun().getCurrentSpread() * 1000) + Screen.height / 2, 0);
+                    crosshair.transform.position = new Vector3(Screen.width / 2, Mathf.Abs(playerShooter.getActiveGun().getCurrentSpread() * Screen.width) + Screen.height / 2, 0);
                 }
 
                 if (crosshair.gameObject.tag == "BottomCrosshair")
                 {
-                    crosshair.transform.position = new Vector3(Screen.width / 2, -Mathf.Abs(playerShooter.getActiveGun().getCurrentSpread() * 1000) + Screen.height / 2, 0);
+                    crosshair.transform.position = new Vector3(Screen.width / 2, -Mathf.Abs(playerShooter.getActiveGun().getCurrentSpread() * Screen.width) + Screen.height / 2, 0);
                 }
             }
         }

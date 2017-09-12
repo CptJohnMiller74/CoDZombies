@@ -44,7 +44,6 @@ public class EnemyAttack : MonoBehaviour {
         {
             this.playerInRange = true;
         }
-
     }
 
 
@@ -53,11 +52,6 @@ public class EnemyAttack : MonoBehaviour {
         if (other.gameObject == player)
         {
             this.playerInRange = false;
-        }
-
-        else if (other.gameObject.tag == "SpawnWindow")
-        {
-            this.spawnInRange = false;
         }
     }
 

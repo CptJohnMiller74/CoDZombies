@@ -10,6 +10,7 @@ public class gameController : MonoBehaviour {
     public Transform[] spawns;
     public Text waveDisplay;
     public int maxEnemies;
+    public Image gameOverImg;
 
     private int enemiesInWave;
     private int enemiesLeft;
@@ -19,6 +20,8 @@ public class gameController : MonoBehaviour {
     private int currentEnemies;
     private bool isNewWave;
     private bool isSpawning;
+    //private float restartDelay = 5f;
+    //private float restartTime;
 
 	void Start () {
 
@@ -39,12 +42,12 @@ public class gameController : MonoBehaviour {
             return;
         }
 
-        else if (enemiesLeft > 0 && currentEnemies < maxEnemies && currentEnemies < enemiesLeft && !isSpawning)
+        else if (enemiesLeft > 0 && currentEnemies < maxEnemies && !isSpawning)
         {
             StartCoroutine(spawn()); 
         }
 
-        else if (enemiesLeft <= 0 && currentEnemies == 0 && !isNewWave) 
+        else if (enemiesLeft == 0 && currentEnemies == 0 && !isNewWave) 
         {
             StartCoroutine(newWave());
         }
@@ -54,6 +57,7 @@ public class gameController : MonoBehaviour {
     {
         isSpawning = true;
         currentEnemies += 1;
+        enemiesLeft -= 1;
         yield return new WaitForSeconds(spawnDelay);
         int spawnIndex = Random.Range(0, spawns.Length);
         GameObject newEnemy = Instantiate(enemy, spawns[spawnIndex].position, spawns[spawnIndex].rotation);
